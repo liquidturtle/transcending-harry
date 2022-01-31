@@ -7,7 +7,10 @@ import mediapipe as mp
 import time
 import glob
 
-video_list = glob.glob("/home/tobias/Videos/dynamicframe/*.mp4")
+input_path = '/home/bronan/Videos/dynamicframe'
+output_path = '/home/bronan/Videos'
+video_list = glob.glob(input_path + '/*.mp4')
+
 video = video_list[5]
 print('File',video[33:-4])
 cap = cv2.VideoCapture(video)
@@ -27,7 +30,7 @@ size = (width, height)
 print(size)
 #out = cv2.VideoWriter("/home/tobias/Videos/test.avi", cv2.VideoWriter_fourcc(*'DIVX'),30, size)
 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-out = cv2.VideoWriter('/home/tobias/Videos/' + video[33:-4] + '_facial_landmarks.avi', fourcc, 30, size)
+out = cv2.VideoWriter(output_path + video[33:-4] + '_facial_landmarks.avi', fourcc, 30, size)
 
 while cap.isOpened():
 	success, img = cap.read()
@@ -41,7 +44,7 @@ while cap.isOpened():
 	fps = 1/(cTime-pTime)
 	pTime = cTime
 	cv2.putText(img, f'FPS: {int(fps)}', (20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
-	cv2.imshow("Image", img)
+	cv2.imshow('Image', img)
 #	img_list.append(img)
 	out.write(img)
 	cv2.waitKey(1)
