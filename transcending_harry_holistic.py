@@ -14,7 +14,7 @@ input_path = os.path.join(os.pardir, 'dynamicframe', 'input')
 output_path = os.path.join(os.pardir, 'dynamicframe', 'output_holistic')
 video_list = os.listdir(input_path)
 
-video = video_list[9]
+video = video_list[5]
 print('File:', video[:-4])
 cap = cv2.VideoCapture(os.path.join(input_path, video))
 success, img = cap.read()
@@ -24,7 +24,7 @@ pTime = 0
 mp_drawing = mp.solutions.drawing_utils
 mpFaceMesh = mp.solutions.face_mesh
 faceMesh = mpFaceMesh.FaceMesh(max_num_faces=1)
-drawSpec = mp_drawing.DrawingSpec(thickness=1, circle_radius= 1)
+drawSpec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
 # Holistic parameters
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -59,15 +59,27 @@ with mp_holistic.Holistic(
         image,
         results.face_landmarks,
         mp_holistic.FACEMESH_CONTOURS,
-        landmark_drawing_spec=None,
-        connection_drawing_spec=mp_drawing_styles
-        .get_default_face_mesh_contours_style())
+        None,
+        drawSpec)
     mp_drawing.draw_landmarks(
         image,
         results.pose_landmarks,
         mp_holistic.POSE_CONNECTIONS,
-        landmark_drawing_spec=mp_drawing_styles
-        .get_default_pose_landmarks_style())
+        drawSpec,
+        drawSpec)
+    # mp_drawing.draw_landmarks(
+    #     image,
+    #     results.face_landmarks,
+    #     mp_holistic.FACEMESH_CONTOURS,
+    #     landmark_drawing_spec=None,
+    #     connection_drawing_spec=mp_drawing_styles
+    #     .get_default_face_mesh_contours_style())
+    # mp_drawing.draw_landmarks(
+    #     image,
+    #     results.pose_landmarks,
+    #     mp_holistic.POSE_CONNECTIONS,
+    #     landmark_drawing_spec=mp_drawing_styles
+    #     .get_default_pose_landmarks_style())
     cv2.imshow('MediaPipe Holistic', image)
     out.write(img)
     if cv2.waitKey(5) & 0xFF == 27:
