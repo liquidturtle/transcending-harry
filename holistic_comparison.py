@@ -25,6 +25,28 @@ def calculate_mean_of_array(_df):
     return _df_mean
 
 
+def plot_tracking_success(_df, _title):
+    _df_count = _df.count(axis=1)
+    plt.figure()
+    _df_count.plot(xlabel='frame', ylabel='Detected features', title=_title)
+
+
+def plot_holistic_tracking_success(_df1, _df2, _label1, _label2):
+    _df1_count = _df1.count(axis=1)
+    _df2_count = _df2.count(axis=1)
+    plt.figure()
+    _ax = _df1_count.plot()
+    _df2_count.plot(xlabel='frame', ylabel='Detected features', ax=_ax)
+    plt.legend([_label1, _label2])
+
+
+def plot_holistic_data(_df1, _df2, _legend1, _legend2, _xlabel, _ylabel):
+    plt.figure()
+    _ax = _df1.plot()
+    _df2.plot(xlabel=_xlabel, ylabel=_ylabel, ax=_ax)
+    plt.legend([_legend1, _legend2])
+
+
 plt.close('all')
 
 input_path = os.path.join(os.getcwd(), 'data_landmark')
@@ -50,6 +72,9 @@ df_distances_pose = create_landmark_distance_array(df1_pose, df2_pose)
 df_distances_face_mean = calculate_mean_of_array(df_distances_face)
 df_distances_pose_mean = calculate_mean_of_array(df_distances_pose)
 
+plot_holistic_tracking_success(df1_face, df2_face, 'df1_face', 'df2_face')
+plot_holistic_tracking_success(df1_pose, df2_pose, 'df1_pose', 'df2_pose')
+
 # print(df_distances2)
 print(df_distances_face_mean)
 print(df_distances_pose_mean)
@@ -57,10 +82,10 @@ print(df_distances_pose_mean)
 df_distances = pd.concat([df_distances_face_mean, df_distances_pose_mean], axis=1)
 df_distances.columns = ['face mean dist', 'pose mean dist']
 
-df_distances.plot()
-# df_distances_face_mean.plot()
-# df_distances_pose_mean.plot()
+plot_holistic_data(df_distances_pose_mean, df_distances_face_mean, 'Pose Landmarks', 'Face Landmarks',
+                   'Frame', 'Mean Distance')
 plt.show()
+
 
 # print(distances)
 
