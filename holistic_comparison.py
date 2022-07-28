@@ -1,22 +1,8 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-
-
-def create_landmark_distance_array(_df1, _df2):
-    # Calculate euclidian distance of each landmark (_lm) between df1 and df2 for every frame
-    _distances = []
-    _distances_columns = []
-    for _lm in range(int((len(_df1.columns) - 1) / 2)):
-        # print(df1.iloc[:, [number * 2 + 1, number * 2 + 2]])
-        _lm_distance = np.linalg.norm(
-            _df1.iloc[:, [_lm * 2 + 1, _lm * 2 + 2]].values - _df2.iloc[:, [_lm * 2 + 1, _lm * 2 + 2]].values, axis=1)
-        _distances.append(_lm_distance)
-        _distances_columns.append('lm_dist_' + str(_lm))
-
-    _df_distances = pd.DataFrame(zip(*_distances), columns=_distances_columns)
-    return _df_distances
+import json
+from transcending_harry_library import get_landmark_distance, plot_holistic_data
 
 
 def calculate_mean_of_array(_df):
@@ -40,70 +26,48 @@ def plot_holistic_tracking_success(_df1, _df2, _label1, _label2):
     plt.legend([_label1, _label2])
 
 
-def plot_holistic_data(_df1, _df2, _legend1, _legend2, _xlabel, _ylabel):
-    plt.figure()
-    _ax = _df1.plot()
-    _df2.plot(xlabel=_xlabel, ylabel=_ylabel, ax=_ax)
-    plt.legend([_legend1, _legend2])
+if __name__ == '__main__':
 
+    # Open and load config json
+    config_file = open('holistic_comparison.json', encoding='utf-8')
+    config_data = json.load(config_file)
+    print(config_data)
 
-plt.close('all')
+    # Close any plots
+    plt.close('all')
 
-input_path = os.path.join(os.getcwd(), 'data_landmark')
-landmark_list = os.listdir(input_path)
+    # landmark_list = os.listdir(input_path)
+    #
+    # landmark_list = landmark_list[0:4]
+    # # landmark_list = [landmark_list[0], landmark_list[3]]
+    # print(landmark_list)
+    #
+    # dataframes = []
+    # for landmarks in landmark_list:
+    #     dataframes.append(pd.read_csv(os.path.join(input_path, landmarks), delimiter=';'))
 
-landmark_list = landmark_list[0:4]
-# landmark_list = [landmark_list[0], landmark_list[3]]
-print(landmark_list)
+    df1_face = pd.read_excel(config_data['landmarks_vid01'], index_col=0, sheet_name='face')
+    df1_pose = pd.read_excel(config_data['landmarks_vid01'], index_col=0, sheet_name='pose')
+    df2_face = pd.read_excel(config_data['landmarks_vid02'], index_col=0, sheet_name='face')
+    df2_pose = pd.read_excel(config_data['landmarks_vid02'], index_col=0, sheet_name='pose')
+    print(df1_face)
 
-dataframes = []
-for landmarks in landmark_list:
-    dataframes.append(pd.read_csv(os.path.join(input_path, landmarks), delimiter=';'))
+    df_distances_face = get_landmark_distance(df1_face, df2_face)
+    df_distances_pose = get_landmark_distance(df1_pose, df2_pose)
 
-df1_face = dataframes[0]
-df1_pose = dataframes[1]
-df2_face = dataframes[2]
-df2_pose = dataframes[3]
-# print(df1)
+    df_distances_face_mean = calculate_mean_of_array(df_distances_face)
+    df_distances_pose_mean = calculate_mean_of_array(df_distances_pose)
 
-df_distances_face = create_landmark_distance_array(df1_face, df2_face)
-df_distances_pose = create_landmark_distance_array(df1_pose, df2_pose)
+    # plot_holistic_tracking_success(df1_face, df2_face, 'df1_face', 'df2_face')
+    # plot_holistic_tracking_success(df1_pose, df2_pose, 'df1_pose', 'df2_pose')
 
-df_distances_face_mean = calculate_mean_of_array(df_distances_face)
-df_distances_pose_mean = calculate_mean_of_array(df_distances_pose)
+    # print(df_distances2)
+    # print(df_distances_face_mean)
+    # print(df_distances_pose_mean)
 
-plot_holistic_tracking_success(df1_face, df2_face, 'df1_face', 'df2_face')
-plot_holistic_tracking_success(df1_pose, df2_pose, 'df1_pose', 'df2_pose')
+    df_distances = pd.concat([df_distances_face_mean, df_distances_pose_mean], axis=1)
+    df_distances.columns = ['face mean dist', 'pose mean dist']
 
-# print(df_distances2)
-print(df_distances_face_mean)
-print(df_distances_pose_mean)
-
-df_distances = pd.concat([df_distances_face_mean, df_distances_pose_mean], axis=1)
-df_distances.columns = ['face mean dist', 'pose mean dist']
-
-plot_holistic_data(df_distances_pose_mean, df_distances_face_mean, 'Pose Landmarks', 'Face Landmarks',
-                   'Frame', 'Mean Distance')
-plt.show()
-
-
-# print(distances)
-
-# for row in df1.index:
-#     distance = np.linalg.norm(df1[])
-
-
-# distance0 = np.linalg.norm(df1[['x_0', 'y_0']].values - df2[['x_0', 'y_0']].values, axis=1)
-# distance1 = np.linalg.norm(df1[['x_1', 'y_1']].values - df2[['x_1', 'y_1']].values, axis=1)
-# distance2 = np.linalg.norm(df1[['x_2', 'y_2']].values - df2[['x_2', 'y_2']].values, axis=1)
-# distance3 = np.linalg.norm(df1[['x_3', 'y_3']].values - df2[['x_3', 'y_3']].values, axis=1)
-
-
-# print(df1[['x_0', 'y_0']].values - df2[['x_0', 'y_0']].values)
-
-# distances = pd.DataFrame(list(zip(distance0, distance1, distance2, distance3)), columns=['dist_0', 'dist_1', 'dist_2', 'dist_3'])
-# plt.figure()
-
-
-# test = np.linalg.norm([df1.at[row, 'x_0'] - df2.at[row, 'x_0'], df1.at[row, 'y_0'] - df2.at[row, 'y_0']])
-# print(test, distance0[row])
+    plot_holistic_data(df_distances_pose_mean, df_distances_face_mean, 'Mean Face and Pose Landmarks Distance',
+                       'Pose Landmarks', 'Face Landmarks', 'Frame', 'Mean Distance')
+    plt.show()

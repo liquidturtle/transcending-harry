@@ -6,7 +6,7 @@ import cv2
 import mediapipe as mp
 import time
 import os
-import harry_library
+import transcending_harry_library
 
 cwd = os.getcwd()
 input_path = os.path.join(os.pardir, 'dynamicframe', 'input')

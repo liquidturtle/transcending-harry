@@ -8,6 +8,7 @@ opencv-contrib-python = "*"
 mediapipe = "*"
 pandas = "*"
 pyqt5 = "*"
+openpyxl = "*"
 
 [dev-packages]
 

@@ -1,0 +1,17 @@
+{
+  "pose" : {
+    "face" : [0],
+    "shoulder_right" : [11],
+    "shoulder_left" : [12],
+    "hand_right" : [15],
+    "hand_left" : [16]
+  },
+  "face" : {
+    "nose" : [1],
+    "eye_right" : [133],
+    "eye_left" : [362],
+    "lips_centre" : [13],
+    "lips_right" : [76],
+    "lips_left" : [306]
+  }
+}

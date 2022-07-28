@@ -6,6 +6,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Pipenv (transcending-harry)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="graphql" />
+  </component>
+  <component name="PackageRequirementsSettings">
+    <option name="modifyBaseFiles" value="true" />
   </component>
 </module>
