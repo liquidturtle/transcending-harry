@@ -16,7 +16,8 @@ if __name__ == '__main__':
     file_list = file_list[1:]
     segmentation_list = []
     header_list = []
-    # print(landmark_segmentation['pose'].items())
+
+    # Create segmentation and header list given in landmark segmentation file
     for algorithm_type in landmark_segmentation.items():
         segmentation = []
         header = []
@@ -25,8 +26,8 @@ if __name__ == '__main__':
             for value in landmark_type[1]:
                 segmentation.append(value * 2)
                 segmentation.append(value * 2 + 1)
-                header.append(landmark_type[0] + '_x' + str(i))
-                header.append(landmark_type[0] + '_y' + str(i))
+                header.append(landmark_type[0] + '+x' + str(i))
+                header.append(landmark_type[0] + '+y' + str(i))
                 i += 1
         segmentation_list.append(segmentation)
         header_list.append(header)
@@ -36,9 +37,11 @@ if __name__ == '__main__':
         df_raw_pose = pd.read_excel('data_landmark/' + file, index_col=0, sheet_name='pose')
         df_raw_face = pd.read_excel('data_landmark/' + file, index_col=0, sheet_name='face')
 
+        # Create subset of input data dataframe using the segmentation list
         df_pose = df_raw_pose.iloc[:, segmentation_list[0]]
         df_face = df_raw_face.iloc[:, segmentation_list[1]]
 
+        # update headers
         df_pose.columns = header_list[0]
         df_face.columns = header_list[1]
 

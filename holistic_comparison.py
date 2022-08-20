@@ -1,29 +1,8 @@
-import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import json
-from transcending_harry_library import get_landmark_distance, plot_holistic_data
-
-
-def calculate_mean_of_array(_df):
-    _df_mean = pd.DataFrame.mean(_df, axis=1)
-    _df_mean.columns = ['Mean Distance Func']  # Doesn't work yet
-    return _df_mean
-
-
-def plot_tracking_success(_df, _title):
-    _df_count = _df.count(axis=1)
-    plt.figure()
-    _df_count.plot(xlabel='frame', ylabel='Detected features', title=_title)
-
-
-def plot_holistic_tracking_success(_df1, _df2, _label1, _label2):
-    _df1_count = _df1.count(axis=1)
-    _df2_count = _df2.count(axis=1)
-    plt.figure()
-    _ax = _df1_count.plot()
-    _df2_count.plot(xlabel='frame', ylabel='Detected features', ax=_ax)
-    plt.legend([_label1, _label2])
+from transcending_harry_library import get_landmark_distance, calculate_weighted_mean_of_array, plot_holistic_data,\
+    plot_distances_in_frame
 
 
 if __name__ == '__main__':
@@ -50,24 +29,38 @@ if __name__ == '__main__':
     df1_pose = pd.read_excel(config_data['landmarks_vid01'], index_col=0, sheet_name='pose')
     df2_face = pd.read_excel(config_data['landmarks_vid02'], index_col=0, sheet_name='face')
     df2_pose = pd.read_excel(config_data['landmarks_vid02'], index_col=0, sheet_name='pose')
-    print(df1_face)
+    # print(df1_face)
 
     df_distances_face = get_landmark_distance(df1_face, df2_face)
     df_distances_pose = get_landmark_distance(df1_pose, df2_pose)
 
-    df_distances_face_mean = calculate_mean_of_array(df_distances_face)
-    df_distances_pose_mean = calculate_mean_of_array(df_distances_pose)
+    # df_distances_pose_mean = calculate_mean_of_array(df_distances_pose)
 
+    weights_face = config_data['weights_face']
+    weights_pose = config_data['weights_pose']
+    weights_hol = config_data['weights_holistic']
+
+    df_weighted_mean_face = calculate_weighted_mean_of_array(df_distances_face, weights_face, 'face_weighted_mean')
+    df_weighted_mean_pose = calculate_weighted_mean_of_array(df_distances_pose, weights_pose, 'pose_weighted_mean')
+
+    # Concatenate both face and pose mean vector in one dataframe and calculate holistic weighted mean
+    df_hol = pd.concat([df_weighted_mean_face, df_weighted_mean_pose], axis=1)
+    df_weighted_mean_hol = calculate_weighted_mean_of_array(df_hol, weights_hol, 'holistic_weighted_mean')
+    df_hol = pd.concat([df_hol, df_weighted_mean_hol], axis=1)
+
+    # Plot all three results
+    df_hol.plot()
+
+    # Visualize differences between individual landmarks and weighted mean
+    # df_face = pd.concat([df_distances_face, df_weighted_mean_face], axis=1)
+    # print(df_face)
+    # plot_distances_in_frame(df_face, 5)
+
+    # Visualize when tracking is successful and when not
     # plot_holistic_tracking_success(df1_face, df2_face, 'df1_face', 'df2_face')
     # plot_holistic_tracking_success(df1_pose, df2_pose, 'df1_pose', 'df2_pose')
 
-    # print(df_distances2)
-    # print(df_distances_face_mean)
-    # print(df_distances_pose_mean)
+    # plot_holistic_data(df_weighted_mean_pose, df_weighted_mean_face, 'Mean Face and Pose Landmarks Distance',
+    #                    'Pose Landmarks', 'Face Landmarks', 'Frame', 'Mean Distance')
 
-    df_distances = pd.concat([df_distances_face_mean, df_distances_pose_mean], axis=1)
-    df_distances.columns = ['face mean dist', 'pose mean dist']
-
-    plot_holistic_data(df_distances_pose_mean, df_distances_face_mean, 'Mean Face and Pose Landmarks Distance',
-                       'Pose Landmarks', 'Face Landmarks', 'Frame', 'Mean Distance')
     plt.show()

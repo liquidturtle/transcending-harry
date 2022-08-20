@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+""" Media pipe methods """
+
 
 def set_mp_drawing_specs(max_num_faces, thickness, circle_radius):
     """ Method to create the drawing parameters for mediapipe """
@@ -91,17 +93,38 @@ def landmarks_to_csv(_header, _landmarks, _filename):
 
 
 def get_landmark_distance(df1, df2):
-    """ Method to calculate euclidian distance between each landmark in two dataframes """
+    """ Method to calculate euclidian distance between each 2D landmark in two dataframes """
     distances = []
-    distances_columns = []
-    for lm in range(int((len(df1.columns) - 1) / 2)):
+    columns = []
+    for lm in range(int((len(df1.columns) / 2))):
+        # calculate the norm of each x,y pair of every landmark in dataframe one and two
         lm_distance = np.linalg.norm(
-            df1.iloc[:, [lm * 2 + 1, lm * 2 + 2]].values - df2.iloc[:, [lm * 2 + 1, lm * 2 + 2]].values, axis=1)
+            df1.iloc[:, [lm * 2, lm * 2 + 1]].values - df2.iloc[:, [lm * 2, lm * 2 + 1]].values, axis=1)
         distances.append(lm_distance)
-        distances_columns.append('lm_dist_' + str(lm))
+        columns.append('dist_' + df1.columns[lm * 2].split('+')[0])
 
-    df_distances = pd.DataFrame(zip(*distances), columns=distances_columns)
+    # turn list into dataframe and add new headers
+    df_distances = pd.DataFrame(zip(*distances), columns=columns)
     return df_distances
+
+
+def calculate_mean_of_array(df):
+    """Method to calculate the mean of every row in a dataframe"""
+    mean = np.average(df, axis=1)
+    df_mean = pd.DataFrame(mean)
+    df_mean.columns = ['mean']
+    return df_mean
+
+
+def calculate_weighted_mean_of_array(df, weights, column_name):
+    """Method to calculate the weighted mean of every row in a dataframe"""
+    weighted_mean = np.average(df, axis=1, weights=weights)
+    df_weighted_mean = pd.DataFrame(weighted_mean)
+    df_weighted_mean.columns = [column_name]
+    return df_weighted_mean
+
+
+""" Matplotlib methods """
 
 
 def plot_holistic_data(df1, df2, title, legend1, legend2, xlabel, ylabel):
@@ -110,3 +133,26 @@ def plot_holistic_data(df1, df2, title, legend1, legend2, xlabel, ylabel):
     ax = df1.plot()
     df2.plot(xlabel=xlabel, ylabel=ylabel, ax=ax)
     plt.legend([legend1, legend2])
+
+
+def plot_distances_in_frame(df, frame):
+    plt.figure()
+    plt.bar(df.columns, df.iloc[frame, :])
+    plt.xlabel('Landmark')
+    plt.ylabel('Distance')
+    plt.title('Distances Frame ' + str(frame))
+
+
+def plot_tracking_success(df, title):
+    df_count = df.count(axis=1)
+    plt.figure()
+    df_count.plot(xlabel='frame', ylabel='Detected features', title=title)
+
+
+def plot_holistic_tracking_success(df1, df2, label1, label2):
+    df1_count = df1.count(axis=1)
+    df2_count = df2.count(axis=1)
+    plt.figure()
+    ax = df1_count.plot()
+    df2_count.plot(xlabel='frame', ylabel='Detected features', ax=ax)
+    plt.legend([label1, label2])

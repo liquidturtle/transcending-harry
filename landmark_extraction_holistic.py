@@ -20,7 +20,7 @@ if __name__ == '__main__':
     data_path = os.path.join(os.getcwd(), 'data_landmark')
     video_list = os.listdir(input_path)
 
-    # video_list = video_list[0:1]
+    video_list = video_list[0:1]
 
     # loop over all videos
     for index, video in enumerate(video_list):
@@ -54,12 +54,13 @@ if __name__ == '__main__':
                 image.flags.writeable = False
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 results = holistic.process(image)
-                # print(results)
+                print(results.face_landmarks)
+                # print(results.pose_landmarks)
 
                 # Draw landmarks annotation on the image and write new image to file
-                # image = draw_mp_landmarks_on_image(image, mp_drawing, results, mp_holistic, draw_spec)
-                # cv2.imshow('MediaPipe Holistic', image)
-                # out.write(image)
+                image = draw_mp_landmarks_on_image(image, mp_drawing, results, mp_holistic, draw_spec)
+                cv2.imshow('MediaPipe Holistic', image)
+                out.write(image)
 
                 face_results, pose_results = holistic_landmarks_to_list(results, ndigits=4)
                 faces.append(face_results)
@@ -70,14 +71,14 @@ if __name__ == '__main__':
                 if cv2.waitKey(5) & 0xFF == 27:
                     break
 
-        face_header, pose_header = holistic_landmark_headers(n_face_landmarks=468, n_pose_landmarks=33)
-
-        df_face = pd.DataFrame(faces, columns=face_header)
-        df_pose = pd.DataFrame(poses, columns=pose_header)
-
-        with pd.ExcelWriter(os.path.join(data_path, video_name + '_landmarks.xlsx')) as writer:
-            df_face.to_excel(writer, sheet_name='face')
-            df_pose.to_excel(writer, sheet_name='pose')
+        # face_header, pose_header = holistic_landmark_headers(n_face_landmarks=468, n_pose_landmarks=33)
+        #
+        # df_face = pd.DataFrame(faces, columns=face_header)
+        # df_pose = pd.DataFrame(poses, columns=pose_header)
+        #
+        # with pd.ExcelWriter(os.path.join(data_path, video_name + '_landmarks.xlsx')) as writer:
+        #     df_face.to_excel(writer, sheet_name='face')
+        #     df_pose.to_excel(writer, sheet_name='pose')
 
         cap.release()
         out.release()
