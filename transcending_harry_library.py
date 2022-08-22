@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-""" Media pipe methods """
+""" Media pipe and OpenCV methods """
 
 
 def set_mp_drawing_specs(max_num_faces, thickness, circle_radius):
@@ -26,13 +26,75 @@ def draw_mp_landmarks_on_image(image, mp_drawing, results, mp_holistic, draw_spe
     return image
 
 
-def set_video_writer(_image, _video_name, _path, _codec, _tag):
-    _height, _width, _layers = _image.shape
-    _size = (_width, _height)
-    _fourcc = cv2.VideoWriter_fourcc(*_codec)
-    _output_video = cv2.VideoWriter(_path + '/' + _video_name + _tag, _fourcc, 30, _size)
-    return _output_video
+def set_video_writer(image, video_name, path, codec, tag):
+    height, _width, _layers = image.shape
+    size = (_width, height)
+    fourcc = cv2.VideoWriter_fourcc(*codec)
+    output_video = cv2.VideoWriter(path + '/' + video_name + tag, fourcc, 30, size)
+    return output_video
 
+
+def cv_draw_face(frame, width, height, df, color):
+    """ Drawing points and lines of segmented face landmarks. Only accepts 1xn Vectors"""
+    # check for NaN values and skip if found
+    if not df.isnull().values.any():
+        # draw all points
+        for j in range(int(df.size / 2)):
+            cv2.circle(frame, (int(width * df.iloc[j * 2]), int(height * df.iloc[j * 2 + 1])),
+                       1, color, -1)
+
+        # middle point between eyes
+        x = int(width * (df.iloc[2] + df.iloc[4])/2)
+        y = int(height * (df.iloc[3] + df.iloc[5])/2)
+
+        # draw nose to center of eyes
+        cv2.line(frame, (int(width * df.iloc[0]), int(height * df.iloc[1])), (x, y), color, 1)
+        # draw right eye to left eye
+        cv2.line(frame, (int(width * df.iloc[2]), int(height * df.iloc[3])),
+                 (int(width * df.iloc[4]), int(height * df.iloc[5])), color, 1)
+        # draw nose to lips centre
+        cv2.line(frame, (int(width * df.iloc[0]), int(height * df.iloc[1])),
+                 (int(width * df.iloc[6]), int(height * df.iloc[7])), color, 1)
+        # draw lip right to lips centre
+        cv2.line(frame, (int(width * df.iloc[6]), int(height * df.iloc[7])),
+                 (int(width * df.iloc[8]), int(height * df.iloc[9])), color, 1)
+        # draw lip left to lips centre
+        cv2.line(frame, (int(width * df.iloc[6]), int(height * df.iloc[7])),
+                 (int(width * df.iloc[10]), int(height * df.iloc[11])), color, 1)
+
+
+def cv_draw_pose(frame, width, height, df, color):
+    """ Drawing points and lines of segmented pose landmarks. Only accepts 1xn Vectors"""
+    # check for NaN values and skip if found
+    if not df.isnull().values.any():
+        # draw all points
+        for j in range(int(df.size / 2)):
+            cv2.circle(frame, (int(width * df.iloc[j * 2]), int(height * df.iloc[j * 2 + 1])),
+                       1, color, -1)
+
+        # middle point between shoulders
+        x = int(width * (df.iloc[2] + df.iloc[4])/2)
+        y = int(height * (df.iloc[3] + df.iloc[5])/2)
+
+        # # draw nose to right shoulder
+        # cv2.line(frame, (int(width * df.iloc[0]), int(height * df.iloc[1])),
+        #          (int(width * df.iloc[2]), int(height * df.iloc[3])), color, 1)
+        # # draw nose to left shoulder
+        # cv2.line(frame, (int(width * df.iloc[0]), int(height * df.iloc[1])),
+        #          (int(width * df.iloc[4]), int(height * df.iloc[5])), color, 1)
+
+        # draw nose to middle point between shoulder
+        cv2.line(frame, (int(width * df.iloc[0]), int(height * df.iloc[1])), (x, y), color, 1)
+
+        # draw right shoulder to right hand
+        cv2.line(frame, (int(width * df.iloc[2]), int(height * df.iloc[3])),
+                 (int(width * df.iloc[6]), int(height * df.iloc[7])), color, 1)
+        # draw left shoulder to left hand
+        cv2.line(frame, (int(width * df.iloc[4]), int(height * df.iloc[5])),
+                 (int(width * df.iloc[8]), int(height * df.iloc[9])), color, 1)
+        # draw right shoulder to left shoulder
+        cv2.line(frame, (int(width * df.iloc[2]), int(height * df.iloc[3])),
+                 (int(width * df.iloc[4]), int(height * df.iloc[5])), color, 1)
 
 # def pose_landmark_header():
 #     _header = ['frame']
@@ -108,7 +170,7 @@ def get_landmark_distance(df1, df2):
     return df_distances
 
 
-def calculate_mean_of_array(df):
+def calc_mean_of_array(df):
     """Method to calculate the mean of every row in a dataframe"""
     mean = np.average(df, axis=1)
     df_mean = pd.DataFrame(mean)
@@ -116,7 +178,7 @@ def calculate_mean_of_array(df):
     return df_mean
 
 
-def calculate_weighted_mean_of_array(df, weights, column_name):
+def calc_weighted_mean_of_array(df, weights, column_name):
     """Method to calculate the weighted mean of every row in a dataframe"""
     weighted_mean = np.average(df, axis=1, weights=weights)
     df_weighted_mean = pd.DataFrame(weighted_mean)

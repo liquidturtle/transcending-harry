@@ -1,7 +1,0 @@
-{
-  "landmarks_vid01" : "data_landmark_segmented/T707C003_210728_RP0V_landmarks.xlsx",
-  "landmarks_vid02" : "data_landmark_segmented/T707C004_210728_RP0V_landmarks.xlsx",
-  "weights_face": [1, 1, 1, 1, 1, 1],
-  "weights_pose": [1, 0.5, 0.5, 0.2, 0.2],
-  "weights_holistic": [1, 0.5]
-}

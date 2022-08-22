@@ -1,0 +1,7 @@
+{
+  "landmarks_folder" : "data_landmark_segmented",
+  "landmarks_file_main" : "T707C009_210728_RP0V_landmarks.xlsx",
+  "weights_face": [1, 1, 1, 1, 1, 1],
+  "weights_pose": [1, 0.5, 0.5, 0.2, 0.2],
+  "weights_holistic": [1, 0.5]
+}

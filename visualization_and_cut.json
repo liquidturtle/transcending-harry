@@ -1,0 +1,25 @@
+{
+  "video_landmark_sets" : [
+    {
+      "video" : "T707C003_210728_RP0V.mp4",
+      "landmark_file" : "T707C003_210728_RP0V_landmarks.xlsx",
+      "color" : [255, 255, 255]
+    },
+    {
+      "video" : "T707C009_210728_RP0V.mp4",
+      "landmark_file" : "T707C009_210728_RP0V_landmarks.xlsx",
+      "color" : [255, 0, 150]
+    },
+    {
+      "video" : "T707C025_210728_RP0V.mp4",
+      "landmark_file" : "T707C025_210728_RP0V_landmarks.xlsx",
+      "color" : [0, 255, 150]
+    }
+  ],
+  "landmark_folder" : "data_landmark_segmented",
+  "output_video_bool" : 1,
+  "cut_frames" : {
+    "T707C009_210728_RP0V.mp4" : 50,
+    "T707C025_210728_RP0V.mp4" : 400
+  }
+}
