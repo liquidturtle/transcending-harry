@@ -20,7 +20,7 @@ if __name__ == '__main__':
     data_path = os.path.join(os.getcwd(), 'data_landmark')
     video_list = os.listdir(input_path)
 
-    video_list = video_list[0:1]
+    video_list = video_list[10:11]
 
     # loop over all videos
     for index, video in enumerate(video_list):
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         mp_holistic = mp.solutions.holistic
 
         # Define the codec and create VideoWriter object
-        out = set_video_writer(image, video_name, output_path, _codec='DIVX', _tag='holistic.avi')
+        out = set_video_writer(image, video_name, output_path, codec='DIVX', tag='holistic.avi')
 
         i = 0
         faces = []

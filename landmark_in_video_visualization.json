@@ -1,5 +1,5 @@
 {
-  "video" : "T707C003_210728_RP0V.mp4",
-  "landmarks_vid01" : "data_landmark_segmented/T707C003_210728_RP0V_landmarks.xlsx",
-  "landmarks_vid02" : "data_landmark_segmented/T707C004_210728_RP0V_landmarks.xlsx"
+  "video" : "T707C009_210728_RP0V.mp4",
+  "landmarks_vid01" : "data_landmark_segmented/T707C009_210728_RP0V_landmarks.xlsx",
+  "landmarks_vid02" : "data_landmark_segmented/T707C011_210728_RP0V_landmarks.xlsx"
 }
